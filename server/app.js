@@ -4,7 +4,7 @@ import cors from "cors";
 import "./config/db.js";
 
 /* ==============================
-   🔐 AUTH ROUTES (ALL ROLES)
+   🔐 AUTH ROUTES
 ============================== */
 import authRoutes from "./routes/auth.routes.js";
 
@@ -13,7 +13,6 @@ import authRoutes from "./routes/auth.routes.js";
 ============================== */
 import complaintRoutes from "./routes/complaint.routes.js";
 import voteRoutes from "./routes/vote.routes.js";
-// ❌ hotspotRoutes removed
 import profileRoutes from "./routes/profile.routes.js";
 import violationRoutes from "./routes/violation.routes.js";
 import trackRoutes from "./routes/track.routes.js";
@@ -21,21 +20,14 @@ import chatRoutes from "./routes/chat.routes.js";
 import userResolvedRoutes from "./routes/userResolved.routes.js";
 import dashboardRoutes from "./routes/userDashboard.routes.js";
 
-
-
-
-/*=================================
-        DEPARTMENT ROUTES
-=================================*/ 
+/* ==============================
+   🏢 DEPARTMENT ROUTES
+============================== */
 import departmentDashboardRoutes from "./routes/departmentDashboard.routes.js";
 import departmentTaskRoutes from "./routes/departmentTask.routes.js";
 import departmentWorkLogRoutes from "./routes/departmentWorkLog.routes.js";
 import performanceRoutes from "./routes/departmentPerformance.routes.js";
 import departmentProofsRoutes from "./routes/depatmentProof.routes.js";
-
-
-
-
 
 /* ==============================
    👑 ADMIN ROUTES
@@ -48,14 +40,10 @@ import adminPerformanceRoutes from "./routes/adminPerformance.routes.js";
 import adminActivityRoutes from "./routes/adminActivity.routes.js";
 import adminResolvedRoutes from "./routes/adminResolved.routes.js";
 
-
-
 /* ==============================
-   🔔 NOTIFICATION ROUTES (ALL ROLES)
+   🔔 NOTIFICATIONS
 ============================== */
 import notificationRoutes from "./routes/notification.routes.js";
-
-
 
 /* ==============================
    🔐 MIDDLEWARE
@@ -67,6 +55,8 @@ const app = express();
 /* ==============================
    ⚙️ GLOBAL MIDDLEWARE
 ============================== */
+
+// ✅ BEST CORS (works for Netlify + preview URLs)
 app.use(cors({
   origin: true,
   credentials: true
@@ -79,57 +69,54 @@ app.use(express.urlencoded({ extended: true }));
    🚀 API ROUTES
 ========================================================= */
 
-/* ---------- 🔐 AUTH ---------- */
+// 🔐 AUTH
 app.use("/api/auth", authRoutes);
 
-/* ---------- 👤 USER ---------- */
-app.use("/api/complaints", complaintRoutes);   // Report + view complaints
-app.use("/api/votes", voteRoutes);             // Voting system
-// ❌ app.use("/api/hotspots", hotspotRoutes);   // REMOVED
-app.use("/api/profile", profileRoutes);        // User profile
-app.use("/api/violations", violationRoutes);   // Report violations
-app.use("/api/track", trackRoutes);            // Track complaints
-// app.use("/api/votes", voteRoutes);          // ❌ DUPLICATE REMOVED
-app.use("/api/chat", chatRoutes);   
+// 👤 USER
+app.use("/api/complaints", complaintRoutes);
+app.use("/api/votes", voteRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/violations", violationRoutes);
+app.use("/api/track", trackRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/api/user/resolved", userResolvedRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-           // Chatbot
 
-/*--------------Department --------*/
+// 🏢 DEPARTMENT
 app.use("/api/department", departmentDashboardRoutes);
 app.use("/api/department", departmentTaskRoutes);
 app.use("/api/department", departmentWorkLogRoutes);
 app.use("/api/department", performanceRoutes);
 app.use("/api/department/proofs", departmentProofsRoutes);
-/* ---------- 👑 ADMIN ---------- */
-app.use("/api/admin/dashboard", adminDashboardRoutes); // Stats + charts
-app.use("/api/admin/users", adminUserRoutes);          // Manage users
-app.use("/api/admin/tasks", adminTaskRoutes);          // Assign tasks
+
+// 👑 ADMIN
+app.use("/api/admin/dashboard", adminDashboardRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/tasks", adminTaskRoutes);
 app.use("/api/admin/departments", adminDepartmentRoutes);
 app.use("/api/admin/performance", adminPerformanceRoutes);
 app.use("/api/admin/activity", adminActivityRoutes);
 app.use("/api/admin/resolved", adminResolvedRoutes);
 
-/* ---------- 🔔 NOTIFICATIONS ---------- */
-app.use("/api/notifications", notificationRoutes);     // Real-time + history
-
-
+// 🔔 NOTIFICATIONS
+app.use("/api/notifications", notificationRoutes);
 
 /* =========================================================
    🧪 TEST ROUTES
 ========================================================= */
+
+// Root check
 app.get("/", (req, res) => {
   res.send("🚀 Civic Intelligence API Running");
 });
 
-app.get("/test", (req, res) => {
-  res.send("✅ Test route working");
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK" });
 });
 
-/* =========================================================
-   🔒 PROTECTED TEST
-========================================================= */
-app.get("/protected", authenticateUser, (req, res) => {
+// Protected test
+app.get("/api/protected", authenticateUser, (req, res) => {
   res.json({
     message: "Protected route accessed",
     user: req.user
@@ -141,16 +128,19 @@ app.get("/protected", authenticateUser, (req, res) => {
 ========================================================= */
 app.use((req, res) => {
   res.status(404).json({
-    message: "Route not found"
+    success: false,
+    message: `Route not found: ${req.originalUrl}`
   });
 });
 
 /* =========================================================
-   🔥 GLOBAL ERROR HANDLER (added)
+   🔥 GLOBAL ERROR HANDLER
 ========================================================= */
 app.use((err, req, res, next) => {
   console.error("❌ Server error:", err.stack);
+
   res.status(500).json({
+    success: false,
     message: "Something went wrong!",
     error: process.env.NODE_ENV === "development" ? err.message : undefined
   });
