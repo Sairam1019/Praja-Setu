@@ -68,9 +68,10 @@ const app = express();
    ⚙️ GLOBAL MIDDLEWARE
 ============================== */
 app.use(cors({
-  origin: "https://app.netlify.com/projects/sparkly-gingersnap-85805b",
+  origin: true,
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
