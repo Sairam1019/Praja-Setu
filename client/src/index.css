@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🔥 Pulse animation (hotspot) */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* 💫 Bounce animation (selected marker) */
+@keyframes bounceMarker {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1.1); }
+}
+
+/* 🔹 Marker Base */
+.marker {
+  @apply relative flex items-center justify-center
+         rounded-full text-white font-semibold
+         border-2 border-white
+         shadow-lg;
+  transition: all 0.25s ease;
+}
+
+/* 🔸 Sizes */
+.marker-sm {
+  @apply w-8 h-8 text-xs;
+}
+
+.marker-lg {
+  @apply w-11 h-11 text-sm;
+  animation: bounceMarker 0.3s ease;
+}
+
+/* 🎨 Priority Colors */
+.marker-high {
+  @apply bg-red-500;
+}
+
+.marker-medium {
+  @apply bg-orange-500;
+}
+
+.marker-low {
+  @apply bg-yellow-400 text-black; /* better contrast */
+}
+
+.marker-default {
+  @apply bg-indigo-600;
+}
+
+/* 🔥 Pulse ring (Hotspot effect) */
+.marker-pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: rgba(239, 68, 68, 0.5);
+  animation: pulse 1.5s infinite;
+  z-index: -1;
+}
+
+/* ✨ Selected Glow Effect */
+.marker-selected {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.8),
+              0 6px 15px rgba(0, 0, 0, 0.4);
+  transform: scale(1.15);
+}
+
+/* 📍 Pin Tail (for Google-style marker) */
+.marker-pin::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid currentColor;
+}

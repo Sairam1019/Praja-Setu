@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ml-service:
+    image: sairam2005/ml-service:latest
+    container_name: ml-service
+    ports:
+      - "5001:5001"
+    networks:
+      - civic-network
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+
+  backend:
+    image: sairam2005/civic-backend:latest   # <-- pull from Docker Hub
+    container_name: backend
+    ports:
+      - "5000:5000"
+    networks:
+      - civic-network
+    depends_on:
+      - ml-service
+    env_file:
+      - ./server/.env          # still reads secrets from local .env file
+    environment:
+      - NODE_ENV=development
+      - ML_SERVICE_URL=http://ml-service:5001
+    volumes:
+      - ./server:/app          # optional for development (remove if not needed)
+      - /app/node_modules
+    restart: unless-stopped
+
+networks:
+  civic-network:
+    driver: bridge
