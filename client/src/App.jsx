@@ -28,7 +28,7 @@ import DepartmentProof from "./department_pages/departmentProof.jsx";
 import AdminDashboard from "./admin_pages/AdminDashboard";
 import AdminUsers from "./admin_pages/AdminUsers";
 import AdminTasks from "./admin_pages/AdminTasks";
-import AdminDepartments from "./admin_pages/adminDepartments";
+import AdminDepartments from "./admin_pages/AdminDepartments";
 import AdminDepartmentDetail from "./admin_pages/AdminDepartmentDetail";
 import AdminPerformance from "./admin_pages/AdminPerformance";
 import AdminTaskDetail from "./admin_pages/AdminTaskDetail";
