@@ -4,7 +4,7 @@ import API from "./api";
    👤 USER DASHBOARD
 ========================================================= */
 
-// 🌍 Global stats
+// 🌍 Global stats (no auth or optional auth)
 export const getComplaintStats = () =>
   API("/dashboard/complaint-stats");
 
@@ -22,13 +22,12 @@ export const getStatusDistribution = () =>
    🏢 DEPARTMENT DASHBOARD
 ========================================================= */
 
-// ✅ FIXED: removed extra /dashboard
 export const getDepartmentDashboard = () =>
-  API("/department");
+  API("/department/dashboard");
 
-// ✅ FIXED: removed duplicate /dashboard
+// 🧹 Clear recent activity for department user
 export const clearDepartmentActivity = () =>
-  API("/department/clear-activity", {
+  API("/department/dashboard/clear-activity", {
     method: "DELETE",
   });
 
@@ -37,7 +36,6 @@ export const clearDepartmentActivity = () =>
    🛠 ADMIN DASHBOARD
 ========================================================= */
 
-// ✅ These are already correct (match backend)
 export const getAdminStats = () =>
   API("/admin/dashboard/stats");
 
