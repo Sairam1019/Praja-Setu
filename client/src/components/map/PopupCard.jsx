@@ -16,7 +16,7 @@ function PopupCard({
   const [voteError, setVoteError] = useState(null);
   const [toast, setToast] = useState(null);
   
-  // ✅ Store IDs as strings to avoid type mismatch
+  // ✅ Store prefixed IDs (complaint_123, violation_456) to avoid type conflicts
   const [votedItemIds, setVotedItemIds] = useState(() => {
     const stored = localStorage.getItem("votedItems");
     return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -69,9 +69,10 @@ function PopupCard({
 
   const isVoting = votingId === selected.id;
   
-  // ✅ Convert ID to string for consistent comparison
+  // ✅ Create a unique key that includes the type (complaint/violation)
   const idStr = String(selected.id);
-  const hasVoted = votedItemIds.has(idStr);
+  const voteKey = `${isViolation ? "violation" : "complaint"}_${idStr}`;
+  const hasVoted = votedItemIds.has(voteKey);
 
   const showToast = (message, type = "info") => {
     setToast({ message, type });
@@ -91,9 +92,9 @@ function PopupCard({
     
     try {
       await vote(selected.id);
-      // ✅ Store ID as string
+      // ✅ Store the prefixed key (e.g., "complaint_5" or "violation_5")
       const newVotedSet = new Set(votedItemIds);
-      newVotedSet.add(idStr);
+      newVotedSet.add(voteKey);
       setVotedItemIds(newVotedSet);
       localStorage.setItem("votedItems", JSON.stringify([...newVotedSet]));
       showToast("Vote recorded! Thanks for your feedback.", "success");
