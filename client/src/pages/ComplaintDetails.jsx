@@ -17,7 +17,7 @@ function ComplaintDetails() {
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // ✅ Store IDs as strings to avoid type mismatch
+  // ✅ Store prefixed keys (e.g., "complaint_5", "violation_5")
   const [votedItems, setVotedItems] = useState(() => {
     const stored = localStorage.getItem("votedItems");
     return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -101,10 +101,11 @@ function ComplaintDetails() {
   const handleVote = async (id) => {
     if (votingId === id) return;
 
-    const idStr = String(id);
+    // ✅ Create prefixed key: "complaint_123" or "violation_123"
+    const voteKey = `${mode === "violations" ? "violation" : "complaint"}_${id}`;
     
-    // ✅ Frontend duplicate check using string
-    if (votedItems.has(idStr)) {
+    // ✅ Frontend duplicate check using prefixed key
+    if (votedItems.has(voteKey)) {
       showToast("⚠️ You already voted on this issue", "warning");
       return;
     }
@@ -116,9 +117,9 @@ function ComplaintDetails() {
       } else {
         await voteComplaint(id);
       }
-      // Mark as voted locally (store as string)
+      // Mark as voted using prefixed key
       const newVotedSet = new Set(votedItems);
-      newVotedSet.add(idStr);
+      newVotedSet.add(voteKey);
       setVotedItems(newVotedSet);
       localStorage.setItem("votedItems", JSON.stringify([...newVotedSet]));
       showToast("✅ Vote recorded! Thanks for your feedback.", "success");
@@ -129,7 +130,7 @@ function ComplaintDetails() {
       if (msg.toLowerCase().includes("already")) {
         // Also mark as voted if backend confirms
         const newVotedSet = new Set(votedItems);
-        newVotedSet.add(idStr);
+        newVotedSet.add(voteKey);
         setVotedItems(newVotedSet);
         localStorage.setItem("votedItems", JSON.stringify([...newVotedSet]));
         showToast("⚠️ You already voted on this issue", "warning");
@@ -191,8 +192,11 @@ function ComplaintDetails() {
     return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
   };
 
-  // ✅ Convert ID to string for consistent check
-  const hasVoted = (id) => votedItems.has(String(id));
+  // ✅ Check voted status using prefixed key
+  const hasVoted = (id) => {
+    const voteKey = `${mode === "violations" ? "violation" : "complaint"}_${id}`;
+    return votedItems.has(voteKey);
+  };
 
   // ✅ Share functionality
   const handleShare = async () => {
